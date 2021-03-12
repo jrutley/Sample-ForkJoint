@@ -42,13 +42,17 @@ namespace ForkJoint.Tests
                 },
                 Burgers = new[]
                 {
-                    new Burger
+                    new Burger<BeefPatty, BeefCondiments>
                     {
                         BurgerId = burgerId,
+                        Patty = new BeefPatty{
                         Weight = 1.0m,
                         Cheese = true,
+                        },
+                        Condiments = new BeefCondiments {
                         OnionRing = true,
                         BarbecueSauce = true
+                        }
                     }
                 },
                 Shakes = default(Shake[]),
@@ -85,11 +89,13 @@ namespace ForkJoint.Tests
                 },
                 Burgers = new[]
                 {
-                    new Burger
+                    new Burger<BeefPatty, BeefCondiments>
                     {
                         BurgerId = burgerId,
+                        Patty = new BeefPatty{
                         Weight = 1.0m,
-                        Cheese = true,
+                        Cheese = true
+                        }
                     }
                 },
                 Shakes = default(Shake[]),
@@ -129,11 +135,12 @@ namespace ForkJoint.Tests
                 },
                 Burgers = new[]
                 {
-                    new Burger
+                    new Burger<BeefPatty, BeefCondiments>
                     {
                         BurgerId = burgerId,
-                        Weight = 1.0m,
-                        Lettuce = true
+                        Patty = new BeefPatty{
+                        Weight = 1.0m},
+                        Condiments = new BeefCondiments { Lettuce = true }
                     }
                 },
                 Shakes = default(Shake[]),
@@ -167,11 +174,12 @@ namespace ForkJoint.Tests
                 },
                 Burgers = new[]
                 {
-                    new Burger
+                    new Burger<BeefPatty, BeefCondiments>
                     {
                         BurgerId = burgerId,
-                        Weight = 1.0m,
-                        Lettuce = true
+                        Patty = new BeefPatty{
+                        Weight = 1.0m},
+                        Condiments = new BeefCondiments {Lettuce = true}
                     }
                 },
                 Shakes = default(Shake[]),
@@ -190,7 +198,7 @@ namespace ForkJoint.Tests
         protected override void ConfigureServices(IServiceCollection collection)
         {
             collection.AddSingleton<IGrill, Grill>();
-            collection.AddScoped<IItineraryPlanner<OrderBurger>, BurgerItineraryPlanner>();
+            collection.AddScoped<IItineraryPlanner<OrderBurger<BeefPatty,BeefCondiments>>, BeefBurgerItineraryPlanner>();
             collection.AddSingleton<IFryer, Fryer>();
         }
 
@@ -198,7 +206,7 @@ namespace ForkJoint.Tests
         {
             configurator.AddConsumer<CookFryConsumer>();
             configurator.AddConsumer<CookOnionRingsConsumer>();
-            configurator.AddActivitiesFromNamespaceContaining<GrillBurgerActivity>();
+            configurator.AddActivitiesFromNamespaceContaining<GrillBurgerActivity<BurgerPatty>>();
 
             configurator.AddFuturesFromNamespaceContaining<OrderFuture>();
         }

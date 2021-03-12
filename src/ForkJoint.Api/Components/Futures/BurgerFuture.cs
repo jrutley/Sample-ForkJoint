@@ -5,8 +5,8 @@ namespace ForkJoint.Api.Components.Futures
     using MassTransit.Futures;
 
 
-    public class BurgerFuture :
-        Future<OrderBurger, BurgerCompleted>
+    public class BurgerFuture<T, TCondiment> :
+        Future<OrderBurger<T, TCondiment>, BurgerCompleted<T, TCondiment>> where TCondiment: Condiments
     {
         public BurgerFuture()
         {
@@ -16,7 +16,7 @@ namespace ForkJoint.Api.Components.Futures
                 .OnRoutingSlipCompleted(r => r
                     .SetCompletedUsingInitializer(context =>
                     {
-                        var burger = context.Message.GetVariable<Burger>(nameof(BurgerCompleted.Burger));
+                        var burger = context.Message.GetVariable<Burger<T,TCondiment>>(nameof(BurgerCompleted<T,TCondiment>.Burger));
 
                         return new
                         {

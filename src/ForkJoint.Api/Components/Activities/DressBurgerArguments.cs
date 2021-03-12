@@ -4,12 +4,12 @@ namespace ForkJoint.Api.Components.Activities
     using Contracts;
 
 
-    public interface DressBurgerArguments
+    public interface DressBeefBurgerArguments
     {
         Guid OrderId { get; }
         Guid BurgerId { get; }
 
-        BurgerPatty Patty { get; }
+        BeefPatty Patty { get; }
 
         bool Lettuce { get; }
         bool Pickle { get; }

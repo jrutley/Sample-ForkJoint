@@ -8,19 +8,19 @@ namespace ForkJoint.Api.Components.Activities
     using Microsoft.Extensions.Logging;
 
 
-    public class DressBurgerActivity :
-        IExecuteActivity<DressBurgerArguments>
+    public class DressBeefBurgerActivity :
+        IExecuteActivity<DressBeefBurgerArguments>
     {
-        readonly ILogger<DressBurgerActivity> _logger;
+        readonly ILogger<DressBeefBurgerActivity> _logger;
         readonly IRequestClient<OrderOnionRings> _onionRingClient;
 
-        public DressBurgerActivity(ILogger<DressBurgerActivity> logger, IRequestClient<OrderOnionRings> onionRingClient)
+        public DressBeefBurgerActivity(ILogger<DressBeefBurgerActivity> logger, IRequestClient<OrderOnionRings> onionRingClient)
         {
             _logger = logger;
             _onionRingClient = onionRingClient;
         }
 
-        public async Task<ExecutionResult> Execute(ExecuteContext<DressBurgerArguments> context)
+        public async Task<ExecutionResult> Execute(ExecuteContext<DressBeefBurgerArguments> context)
         {
             var arguments = context.Arguments;
 
@@ -48,18 +48,21 @@ namespace ForkJoint.Api.Components.Activities
                 }, context.CancellationToken);
             }
 
-            var burger = new Burger
+            var burger = new Burger<BeefPatty, BeefCondiments>
             {
                 BurgerId = arguments.BurgerId,
-                Weight = patty.Weight,
-                Cheese = patty.Cheese,
+                //Weight = patty.Weight,
+                Patty = patty,
+                Condiments = new BeefCondiments {
+                //Cheese = patty.Cheese,
                 Lettuce = arguments.Lettuce,
                 Onion = arguments.Onion,
                 Pickle = arguments.Pickle,
-                Ketchup = arguments.Ketchup,
+                //Ketchup = arguments.Ketchup,
                 Mustard = arguments.Mustard,
                 BarbecueSauce = arguments.BarbecueSauce,
                 OnionRing = arguments.OnionRing
+                }
             };
 
             return context.CompletedWithVariables(new {burger});

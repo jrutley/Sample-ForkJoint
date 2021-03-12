@@ -47,7 +47,7 @@ namespace ForkJoint.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.TryAddScoped<IItineraryPlanner<OrderBurger>, BurgerItineraryPlanner>();
+            services.TryAddScoped<IItineraryPlanner<OrderBurger<BeefPatty,BeefCondiments>>, BeefBurgerItineraryPlanner>();
             services.TryAddSingleton<IGrill, Grill>();
             services.TryAddSingleton<IFryer, Fryer>();
             services.TryAddSingleton<IShakeMachine, ShakeMachine>();
@@ -89,7 +89,7 @@ namespace ForkJoint.Api
 
                     x.AddConsumersFromNamespaceContaining<CookOnionRingsConsumer>();
 
-                    x.AddActivitiesFromNamespaceContaining<GrillBurgerActivity>();
+                    x.AddActivitiesFromNamespaceContaining<GrillBurgerActivity<BurgerPatty>>();
 
                     x.AddFuturesFromNamespaceContaining<OrderFuture>();
 

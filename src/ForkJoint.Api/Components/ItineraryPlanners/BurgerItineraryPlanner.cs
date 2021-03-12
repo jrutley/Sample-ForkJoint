@@ -9,35 +9,35 @@ namespace ForkJoint.Api.Components.ItineraryPlanners
     using MassTransit.Futures;
 
 
-    public class BurgerItineraryPlanner :
-        IItineraryPlanner<OrderBurger>
+    public class BeefBurgerItineraryPlanner :
+        IItineraryPlanner<OrderBurger<BeefPatty,BeefCondiments>>
     {
         readonly Uri _dressAddress;
         readonly Uri _grillAddress;
 
-        public BurgerItineraryPlanner(IEndpointNameFormatter formatter)
+        public BeefBurgerItineraryPlanner(IEndpointNameFormatter formatter)
         {
-            _grillAddress = new Uri($"exchange:{formatter.ExecuteActivity<GrillBurgerActivity, GrillBurgerArguments>()}");
-            _dressAddress = new Uri($"exchange:{formatter.ExecuteActivity<DressBurgerActivity, DressBurgerArguments>()}");
+            _grillAddress = new Uri($"exchange:{formatter.ExecuteActivity<GrillBurgerActivity<BeefPatty>, GrillBurgerArguments<BeefPatty>>()}");
+            _dressAddress = new Uri($"exchange:{formatter.ExecuteActivity<DressBeefBurgerActivity, DressBeefBurgerArguments>()}");
         }
 
-        public async Task PlanItinerary(FutureConsumeContext<OrderBurger> context, ItineraryBuilder builder)
+        public async Task PlanItinerary(FutureConsumeContext<OrderBurger<BeefPatty,BeefCondiments>> context, ItineraryBuilder builder)
         {
             var orderBurger = context.Message;
 
-            builder.AddVariable(nameof(OrderBurger.OrderId), orderBurger.OrderId);
-            builder.AddVariable(nameof(OrderBurger.OrderLineId), orderBurger.OrderLineId);
+            builder.AddVariable(nameof(OrderBurger<BeefPatty,BeefCondiments>.OrderId), orderBurger.OrderId);
+            builder.AddVariable(nameof(OrderBurger<BeefPatty,BeefCondiments>.OrderLineId), orderBurger.OrderLineId);
 
             var burger = orderBurger.Burger;
 
-            builder.AddActivity(nameof(GrillBurgerActivity), _grillAddress, new
+            builder.AddActivity(nameof(GrillBurgerActivity<BeefPatty>), _grillAddress, new
             {
-                burger.Weight,
-                burger.Cheese,
+                burger.Patty.Weight,
+                burger.Patty.Cheese,
             });
 
             Guid? onionRingId = default;
-            if (burger.OnionRing)
+            if (burger.Condiments.OnionRing)
             {
                 onionRingId = NewId.NextGuid();
 
@@ -50,15 +50,15 @@ namespace ForkJoint.Api.Components.ItineraryPlanners
                 });
             }
 
-            builder.AddActivity(nameof(DressBurgerActivity), _dressAddress, new
+            builder.AddActivity(nameof(DressBeefBurgerActivity), _dressAddress, new
             {
-                burger.Lettuce,
-                burger.Pickle,
-                burger.Onion,
-                burger.Ketchup,
-                burger.Mustard,
-                burger.BarbecueSauce,
-                burger.OnionRing,
+                burger.Condiments.Lettuce,
+                burger.Condiments.Pickle,
+                burger.Condiments.Onion,
+                burger.Condiments.Ketchup,
+                burger.Condiments.Mustard,
+                burger.Condiments.BarbecueSauce,
+                burger.Condiments.OnionRing,
                 onionRingId
             });
         }

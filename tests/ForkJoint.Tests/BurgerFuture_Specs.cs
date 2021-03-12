@@ -25,24 +25,28 @@ namespace ForkJoint.Tests
 
             var scope = Provider.CreateScope();
 
-            var client = scope.ServiceProvider.GetRequiredService<IRequestClient<OrderBurger>>();
+            var client = scope.ServiceProvider.GetRequiredService<IRequestClient<OrderBurger<BeefPatty, BeefCondiments>>>();
 
-            Response<BurgerCompleted> response = await client.GetResponse<BurgerCompleted>(new
+            Response<BurgerCompleted<BeefPatty,BeefCondiments>> response = await client.GetResponse<BurgerCompleted<BeefPatty,BeefCondiments>>(new
             {
                 OrderId = orderId,
                 OrderLineId = orderLineId,
-                Burger = new Burger
+                Burger = new Burger<BeefPatty,BeefCondiments>
                 {
                     BurgerId = orderLineId,
+                    Patty = new BeefPatty{
                     Weight = 1.0m,
-                    Cheese = true,
+                    Cheese = true},
+                    Condiments = new BeefCondiments{
+                        Ketchup = true
+                    }
                 }
             });
 
             Assert.That(response.Message.OrderId, Is.EqualTo(orderId));
             Assert.That(response.Message.OrderLineId, Is.EqualTo(orderLineId));
-            Assert.That(response.Message.Burger.Cheese, Is.True);
-            Assert.That(response.Message.Burger.Weight, Is.EqualTo(1.0m));
+            Assert.That(response.Message.Burger.Patty.Cheese, Is.True);
+            Assert.That(response.Message.Burger.Patty.Weight, Is.EqualTo(1.0m));
         }
 
         [Test]
@@ -53,20 +57,23 @@ namespace ForkJoint.Tests
 
             var scope = Provider.CreateScope();
 
-            var client = scope.ServiceProvider.GetRequiredService<IRequestClient<OrderBurger>>();
+            var client = scope.ServiceProvider.GetRequiredService<IRequestClient<OrderBurger<BeefPatty,BeefCondiments>>>();
 
             try
             {
-                await client.GetResponse<BurgerCompleted>(new
+                await client.GetResponse<BurgerCompleted<BeefPatty,BeefCondiments>>(new
                 {
                     OrderId = orderId,
                     OrderLineId = orderLineId,
-                    Burger = new Burger
+                    Burger = new Burger<BeefPatty,BeefCondiments>
                     {
                         BurgerId = orderLineId,
+                        Patty = new BeefPatty {
                         Weight = 1.0m,
-                        Cheese = true,
+                        Cheese = true},
+                        Condiments = new BeefCondiments {
                         Lettuce = true
+                        }
                     }
                 });
 
@@ -82,14 +89,14 @@ namespace ForkJoint.Tests
         protected override void ConfigureServices(IServiceCollection collection)
         {
             collection.AddSingleton<IGrill, Grill>();
-            collection.AddScoped<IItineraryPlanner<OrderBurger>, BurgerItineraryPlanner>();
+            collection.AddScoped<IItineraryPlanner<OrderBurger<BeefPatty,BeefCondiments>>, BeefBurgerItineraryPlanner>();
         }
 
         protected override void ConfigureMassTransit(IServiceCollectionBusConfigurator configurator)
         {
-            configurator.AddActivitiesFromNamespaceContaining<GrillBurgerActivity>();
+            configurator.AddActivitiesFromNamespaceContaining<GrillBurgerActivity<BeefPatty>>();
 
-            configurator.AddFuture<BurgerFuture>();
+            configurator.AddFuture<BurgerFuture<BeefPatty, BeefCondiments>>();
             configurator.AddFuture<OnionRingsFuture>();
         }
     }

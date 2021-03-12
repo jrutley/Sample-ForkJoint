@@ -3,8 +3,8 @@ namespace ForkJoint.Api.Components.Activities
     using Contracts;
 
 
-    public interface GrillBurgerLog
+    public interface GrillBurgerLog<T> where T: BurgerPatty
     {
-        BurgerPatty Patty { get; }
+        T Patty { get; }
     }
 }

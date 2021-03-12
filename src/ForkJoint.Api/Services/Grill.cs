@@ -19,27 +19,32 @@ namespace ForkJoint.Api.Services
             _patties = new HashSet<BurgerPatty>();
         }
 
-        public async Task<BurgerPatty> CookOrUseExistingPatty(decimal weight, bool cheese)
+        public async Task<BurgerPatty> CookOrUseExistingPatty(BurgerPatty patty) //T>(T patty)//decimal weight, bool cheese)
         {
-            var existing = _patties.FirstOrDefault(x => x.Cheese == cheese && x.Weight == weight);
-            if (existing != null)
+            //var existing = _patties.FirstOrDefault(x => x.Cheese == cheese && x.Weight == weight);
+            var existing = _patties.Contains(patty); // .FirstOrDefault(x => x == patty);
+            //if (existing != null)
+            if (existing)
             {
-                _logger.LogDebug("Using existing patty {Weight} {Cheese}", existing.Weight, existing.Cheese);
+                _logger.LogDebug($"Using existing patty {patty}"); //{Weight} {Cheese}", existing.Weight, existing.Cheese);
 
-                _patties.Remove(existing);
-                return existing;
+                _patties.Remove(patty);
+                return patty;
             }
 
-            _logger.LogDebug("Grilling patty {Weight} {Cheese}", weight, cheese);
+            //_logger.LogDebug("Grilling patty {Weight} {Cheese}", weight, cheese);
+            _logger.LogDebug("Grilling patty {patty}", patty);
 
-            await Task.Delay(5000 + (int)(1000.0m * weight));
+            await Task.Delay((int)patty.CookTime()); //5000 + (int)(1000.0m * weight));
 
-            var patty = new BurgerPatty
-            {
-                Weight = weight,
-                Cheese = cheese
-            };
+            // We should probably be making a new object and passing in properties from this method
+            // var newPatty = new BurgerPatty
+            // {
+            //     Weight = weight,
+            //     Cheese = cheese
+            // };
 
+            //return newPatty;
             return patty;
         }
 

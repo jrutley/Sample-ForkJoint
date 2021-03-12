@@ -6,7 +6,7 @@ namespace ForkJoint.Api.Services
 
     public interface IGrill
     {
-        Task<BurgerPatty> CookOrUseExistingPatty(decimal weight, bool cheese);
+        Task<BurgerPatty> CookOrUseExistingPatty(BurgerPatty props);//decimal weight, bool cheese);
         void Add(BurgerPatty patty);
     }
 }

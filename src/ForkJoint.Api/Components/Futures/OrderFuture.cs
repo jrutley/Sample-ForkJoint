@@ -15,12 +15,12 @@ namespace ForkJoint.Api.Components.Futures
         {
             ConfigureCommand(x => x.CorrelateById(context => context.Message.OrderId));
 
-            SendRequests<Burger, OrderBurger>(x => x.Burgers, x =>
+            SendRequests<Burger<BeefPatty, BeefCondiments>, OrderBurger<BeefPatty, BeefCondiments>>(x => x.Burgers, x =>
                 {
                     x.UsingRequestInitializer(context => MapOrderBurger(context));
                     x.TrackPendingRequest(message => message.OrderLineId);
                 })
-                .OnResponseReceived<BurgerCompleted>(x => x.CompletePendingRequest(message => message.OrderLineId));
+                .OnResponseReceived<BurgerCompleted<BeefPatty, BeefCondiments>>(x => x.CompletePendingRequest(message => message.OrderLineId));
 
             SendRequests<Fry, OrderFry>(x => x.Fries, x =>
                 {
@@ -84,7 +84,7 @@ namespace ForkJoint.Api.Components.Futures
             };
         }
 
-        static object MapOrderBurger(FutureConsumeContext<Burger> context)
+        static object MapOrderBurger<TPatty, TCondiments>(FutureConsumeContext<Burger<TPatty, TCondiments>> context) where TCondiments: Condiments
         {
             return new
             {

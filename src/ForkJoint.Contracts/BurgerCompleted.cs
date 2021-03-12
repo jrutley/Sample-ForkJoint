@@ -1,8 +1,8 @@
 namespace ForkJoint.Contracts
 {
-    public interface BurgerCompleted :
-        OrderLineCompleted
+    public interface BurgerCompleted<T, TCondiments> :
+        OrderLineCompleted where TCondiments: Condiments
     {
-        Burger Burger { get; }
+        Burger<T, TCondiments> Burger { get; }
     }
 }
